@@ -1,0 +1,2 @@
+[run]
+omit = */*/transactions/*, */*/tests/*, */*/migrations/*, */*/settings/*, */wsgi.py, */apps.py, */django_urls.py, */django_wsgi.py
