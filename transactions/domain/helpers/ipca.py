@@ -1,40 +1,46 @@
 import os
-
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal
+from pyparsing import Char
 
-class TransactionIpca:
-    def __init__(self, invest: int, deadline: int) -> None:
+PERCENT_IPCA = os.getenv('IPCA_DEFAULT', 6)
+PERCENT_IRR = os.getenv('IPCA_IRR', 0.85)
+PERCENT_RATE = os.getenv('IPCA_RATE', 6.05)
+
+class HelpersIpca:
+    def __init__(self, invest: Decimal, name: Char, deadline: int) -> None:
         self.invest = invest
+        self.name = name
         self.deadline = deadline
-        self.ipca = os.getenv('IPCA_DEFAULT', 6)
-        self.irr = os.getenv('IPCA_IRR', 0.85)
 
+    @property
     def contract_fee(self):
-        taxa = (6.05 / 100) + 1
+        taxa = (PERCENT_RATE / 100) + 1
         result = (taxa) ** (1 / 12)
 
         return result
 
-    def ipca_default(self):
-        ipca_calcule = (self.ipca / 100) + 1
+    @property
+    def ipca(self):
+        ipca_calcule = (PERCENT_IPCA / 100) + 1
         result = (ipca_calcule) ** (1 / 12)
 
         return result
 
+    @property
     def summation(self):
-        ipca = self.ipca_default()
-        taxa = self.contract_fee()
+        ipca = self.ipca
+        taxa = self.contract_fee
         return (ipca + taxa) - 1
 
     def patrimony(self, contribution: int):
-        summ = self.summation()
+        summ = self.summation
 
         return contribution * summ
 
     def patrymony_with_taxes(self, contribution: int):
         return (self.patrimony(contribution) - contribution) * 0.85
-
 
     def patrymony_without_taxes(self, contribution: int):
         return self.patrimony(contribution) - contribution
@@ -42,13 +48,14 @@ class TransactionIpca:
     def exec(self):
         try:
             amount = []
-
             aux_calcule = 0
 
             date_id = date.today() + relativedelta(months=1)
             aux_calcule = self.patrimony(contribution=self.invest)
             income_ir = self.patrymony_with_taxes(contribution=self.invest)
-            income_gross = self.patrymony_without_taxes(contribution=self.invest)
+            income_gross = self.patrymony_without_taxes(
+                contribution=self.invest
+            )
 
             amount.append(
                 {
@@ -68,7 +75,9 @@ class TransactionIpca:
                 income_ir = self.patrymony_with_taxes(contribution=aux_calcule)
 
                 # rendimento sem imposto
-                income_gross = self.patrymony_without_taxes(contribution=aux_calcule)
+                income_gross = self.patrymony_without_taxes(
+                    contribution=aux_calcule
+                )
 
                 amount.append(
                     {
@@ -81,6 +90,14 @@ class TransactionIpca:
 
             income = amount[-1]
 
-            return {'name': 'jose', 'amount': 23.1111,'result_timeline': amount, 'finish_period': income}
+            return {
+                'name': self.name,
+                'amount': self.invest,
+                'result_timeline': amount,
+                'finish_period': income,
+                'percent_ipca': PERCENT_IPCA,
+                'percent_irr': PERCENT_IRR,
+                'percent_rate': PERCENT_RATE
+            }
         except Exception as err:
             raise err
