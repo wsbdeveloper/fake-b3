@@ -1,7 +1,7 @@
 from black import err
 from pyparsing import Char
 
-from transactions.domain.helpers.cdi import HelpersCdi
+from simulations.domain.helpers.cdi import HelpersCdi
 
 
 class TransactionCdi:

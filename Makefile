@@ -7,7 +7,7 @@ test:
 	@python manage.py test
 
 # Lint
-APPS= transactions
+APPS= simulations
 
 clean:
 	@find . -name "*.pyc" | xargs rm -rf
@@ -22,10 +22,10 @@ clean:
 
 
 flake8:
-	@flake8 --show-source ./transactions
+	@flake8 --show-source ./simulations
 
 deadfixtures:  ## Checks dead fixtures
-	@pytest --dead-fixtures ./transactions
+	@pytest --dead-fixtures ./simulations
 
 check-python-import:
 	isort $(APPS) --check-only --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88 -l 79

@@ -9,7 +9,7 @@ PERCENT_IRR = os.getenv('IPCA_IRR', 0.85)
 PERCENT_RATE = os.getenv('IPCA_RATE', 6.05)
 
 class HelpersIpca:
-    def __init__(self, invest: Decimal, name: Char, deadline: int) -> None:
+    def __init__(self, invest: int, name: Char, deadline: int) -> None:
         self.invest = invest
         self.name = name
         self.deadline = deadline
@@ -90,10 +90,12 @@ class HelpersIpca:
 
             income = amount[-1]
 
+            breakpoint()
             return {
                 'name': self.name,
                 'amount': self.invest,
                 'result_timeline': amount,
+                'deadline': self.deadline,
                 'finish_period': income,
                 'percent_ipca': PERCENT_IPCA,
                 'percent_irr': PERCENT_IRR,

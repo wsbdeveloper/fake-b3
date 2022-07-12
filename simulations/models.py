@@ -1,12 +1,15 @@
+import uuid
 from django.db import models
 from django.utils.timezone import now
 
 
-class Transactions(models.Model):
+class Simulations(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
+    simulation_id = models.UUIDField(default=uuid.uuid4, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=100)
-    amount = models.DecimalField(blank=False, max_digits=10, decimal_places=2)
+    amount = models.IntegerField(blank=False, default=0,)
+    deadline = models.IntegerField(blank=False, default=0)
     ipca = models.FloatField(
         blank=True,
         default=0
@@ -21,4 +24,4 @@ class Transactions(models.Model):
     )
 
     def __str__(self) -> str:
-        return f'name: $name - amount: $amount - ipca: $ipca - rate: $rate - irr: $irr'
+        return self.name

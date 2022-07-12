@@ -28,15 +28,15 @@ class HelpersCdi:
         taxa = self.contract_fee()
         return (cdi + taxa) - 1
 
-    def patrimony(self, contribution: int):
+    def patrimony(self, contribution: int) -> int:
         summ = self.summation()
 
         return contribution * summ
 
-    def patrymony_with_taxes(self, contribution: int):
+    def patrymony_with_taxes(self, contribution: int) -> int:
         return (self.patrimony(contribution) - contribution) * 0.85
 
-    def patrymony_without_taxes(self, contribution: int):
+    def patrymony_without_taxes(self, contribution: int) -> int:
         return self.patrimony(contribution) - contribution
 
 

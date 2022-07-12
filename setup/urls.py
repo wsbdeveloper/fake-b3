@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from transactions.views import TransactionsViewSet
+from simulations.views import SimulationsViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
 
-router.register('transaction', TransactionsViewSet, basename='Transactions')
+router.register('simulation', SimulationsViewSet, basename='Simulations')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
