@@ -5,11 +5,5 @@ from simulations.domain.helpers.cdi import HelpersCdi
 
 
 class TransactionCdi:
-    def __init__(self) -> None:
-        self.helper_cdi = HelpersCdi()
-
-    def exec(self):
-        try:
-            self.helper_cdi.exec()
-        except Exception as err:
-            raise err
+    def __init__(self, invest: int, name: Char, deadline: int) -> None:
+        self.helpersIpca = HelpersCdi(invest=invest, name=name, deadline=deadline)

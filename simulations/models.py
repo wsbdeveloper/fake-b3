@@ -14,6 +14,10 @@ class Simulations(models.Model):
         blank=True,
         default=0
     )
+    cdi = models.FloatField(
+        blank=True,
+        default=0
+    )
     rate = models.FloatField(
         blank=True,
         default=0

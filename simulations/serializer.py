@@ -1,3 +1,4 @@
+from email.policy import default
 from unittest import result
 
 from rest_framework import serializers
@@ -21,10 +22,11 @@ class SimulationsSerializer(serializers.ModelSerializer):
 class SimulationsSerializerTimeLine(serializers.ModelSerializer):
     class Meta:
         model = Simulations
-        fields = ('name', 'amount', 'result_timeline', 'percent_ipca','percent_irr', 'percent_rate','deadline')
+        fields = ('name', 'amount', 'result_timeline', 'percent_cdi', 'percent_ipca','percent_irr', 'percent_rate','deadline')
 
     deadline = serializers.IntegerField()
-    percent_ipca = serializers.DecimalField(max_digits=10, decimal_places=2)
+    percent_ipca = serializers.DecimalField(max_digits=10, decimal_places=2, default=0)
+    percent_cdi = serializers.DecimalField(max_digits=10, decimal_places=2, default=0)
     percent_irr = serializers.DecimalField(max_digits=10, decimal_places=2)
     percent_rate = serializers.DecimalField(max_digits=10, decimal_places=2)
     result_timeline = ResultTimeLine(many=True)

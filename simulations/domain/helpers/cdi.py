@@ -1,44 +1,50 @@
 import os
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from pyparsing import Char
 
 
+SELIC = os.getenv('SELIC', 9.25)
+MULT_SELIC = os.getenv('MULT_SELIC', 0.98)
 PERCENT_CDI = os.getenv('CDI_DEFAULT', 6)
 PERCENT_IRR = os.getenv('CDI_IRR', 0.85)
-PERCENT_RATE = os.getenv('CDI_RATE', 6.05)
+PERCENT_RATE = os.getenv('CDI_RATE', 1.16)
 
 class HelpersCdi:
+    def __init__(self, invest: int, name: Char, deadline: int) -> None:
+        self.invest = invest
+        self.name = name
+        self.deadline = deadline
+
+
     @property
-    def contract_fee(self):
-        taxa = (PERCENT_RATE / 100) + 1
-        result = (taxa) ** (1 / 12)
-
-        return result
+    def selic(self):
+        return SELIC / 100
 
     @property
-    def cdi(self):
-        ipca_calcule = (PERCENT_CDI / 100) + 1
-        result = (ipca_calcule) ** (1 / 12)
-
-        return result
+    def taxa_contract_cdi(self):
+        return  PERCENT_RATE / 100
 
     @property
     def summation(self):
-        cdi = self.cdi()
-        taxa = self.contract_fee()
-        return (cdi + taxa) - 1
+        return (self.selic * MULT_SELIC) * self.taxa_contract_cdi
 
-    def patrimony(self, contribution: int) -> int:
-        summ = self.summation()
+    @property
+    def cdi(self):
+        return (self.summation * 100) + 1
 
-        return contribution * summ
+    @property
+    def taxa_cdi(self):
+        return self.cdi ** (1 / 12)
+
+    def cdi_simulation(self, contribution: int) -> int:
+        return contribution * self.taxa_cdi
+
+    def total_cdi_simulation_result(self, contribution: int) -> int:
+        return self.cdi_simulation(contribution=contribution) - contribution
 
     def patrymony_with_taxes(self, contribution: int) -> int:
-        return (self.patrimony(contribution) - contribution) * 0.85
-
-    def patrymony_without_taxes(self, contribution: int) -> int:
-        return self.patrimony(contribution) - contribution
-
+        return self.total_cdi_simulation_result(contribution=contribution) * PERCENT_IRR
 
     def exec(self):
         try:
@@ -46,9 +52,9 @@ class HelpersCdi:
             aux_calcule = 0
 
             date_id = date.today() + relativedelta(months=1)
-            aux_calcule = self.patrimony(contribution=self.invest)
+            aux_calcule = self.cdi_simulation(contribution=self.invest)
             income_ir = self.patrymony_with_taxes(contribution=self.invest)
-            income_gross = self.patrymony_without_taxes(
+            income_gross = self.total_cdi_simulation_result(
                 contribution=self.invest
             )
 
@@ -64,15 +70,10 @@ class HelpersCdi:
             for data in range(1, self.deadline):
                 date_id = date.today() + relativedelta(months=data + 1)
                 # patrimonio total
-                aux_calcule = self.patrimony(contribution=aux_calcule)
+                aux_calcule = self.cdi_simulation(contribution=aux_calcule)
 
                 # rendimento com imposto
                 income_ir = self.patrymony_with_taxes(contribution=aux_calcule)
-
-                # rendimento sem imposto
-                income_gross = self.patrymony_without_taxes(
-                    contribution=aux_calcule
-                )
 
                 amount.append(
                     {
@@ -89,7 +90,11 @@ class HelpersCdi:
                 'name': self.name,
                 'amount': self.invest,
                 'result_timeline': amount,
+                'deadline': self.deadline,
                 'finish_period': income,
+                'percent_cdi': PERCENT_CDI,
+                'percent_irr': PERCENT_IRR,
+                'percent_rate': PERCENT_RATE
             }
         except Exception as err:
             raise err

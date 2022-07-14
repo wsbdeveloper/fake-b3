@@ -62,7 +62,10 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATE': {
         'anon': '500/day'
-    }
+    },
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
 }
 
 # Application definition
