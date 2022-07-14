@@ -90,7 +90,6 @@ class HelpersIpca:
 
             income = amount[-1]
 
-            breakpoint()
             return {
                 'name': self.name,
                 'amount': self.invest,
